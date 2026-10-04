@@ -1,0 +1,18 @@
+Téma semestrální práce:
+Systém pro správu firemních SaaS předplatných, licenčních míst a rozpočtů oddělení (Team Subscription & Department Budget Tracker)
+
+Krátký popis očekávané funkcionality:
+Aplikace slouží k centrální evidenci a řízení výdajů za softwarové nástroje a cloudové služby (např. JetBrains, GitHub, Figma, AWS) v rámci technologické firmy. Řeší problém nekontrolovaného nákupu licencí, překračování měsíčních rozpočtů jednotlivých týmů a přepočtu nákladů u předplatných účtovaných v cizích měnách (EUR, USD) do základní měny společnosti (CZK).
+
+Komu bude výsledný systém určen:
+Systém je určen pro střední a větší IT společnosti a dělí uživatele do tří rolí s odlišným rozsah oprávnění:
+1. Zaměstnanec (Employee): Žádá o přidělení nebo odebrání přístupu (licenčního místa) ke konkrétnímu softwarovému nástroji a sleduje přehled svých aktivních licencí.
+2. Manažer oddělení (Department Manager): Schvaluje či zamítá žádosti zaměstnanců svého oddělení, spravuje obsazenost licencí ve svém týmu a hlídá čerpání měsíčního rozpočtu svého oddělení.
+3. Administrátor / FinOps (Admin): Spravuje globální katalog firemních předplatných, nastavuje maximální počty zakoupených licenčních míst (seats), definuje rozpočtové limity pro jednotlivá oddělení a provádí organizaci přesunů zaměstnanců mezi týmy.
+
+Seznam hlavních funkcí aplikace:
+1. Správa katalogu předplatných a licenčních kapacit: Evidence placených nástrojů s definicí ceny za jedno licenční místo (price per seat), měny účtování (CZK, EUR, USD) a celkového limitu zakoupených míst.
+2. Workflow žádostí a transakční přidělování licencí: Zaměstnanec vytvoří žádost o licenci. Při jejím schválení manažerem systém v jedné transakci ověří dostupnost volného licenčního místa, přepočítá cenu do CZK a zkontroluje, zda přidělení nepřekročí měsíční rozpočet daného oddělení. Při splnění podmínek přiřadí licenci uživateli a aktualizuje vyčerpaný rozpočet.
+3. Automatická konverze měn přes externí API: Integrace s veřejným REST rozhraním (např. API České národní banky nebo Frankfurter API / ECB) pro získávání aktuálních směnných kurzů při schvalování cizoměnových předplatných a přeceňování nákladů.
+4. Uvolňování licencí a přenos nákladů mezi odděleními: Při odebrání licence nebo zrušení celého předplatného systém automaticky uvolní obsazená místa a vrátí alokované prostředky zpět do rozpočtů dotčených oddělení. Při přesunu zaměstnance do jiného oddělení systém transakčně převede náklady na všechny jeho aktivní licence ze starého rozpočtu na rozpočet nového oddělení.
+5. Pokročilé filtrování a audit výdajů: Vyhledávání a filtrování předplatných, aktivních licenčních míst a žádostí podle více parametrů (oddělení, měna, stav žádosti, cenové rozpětí, dostupnost volných kapacit).
