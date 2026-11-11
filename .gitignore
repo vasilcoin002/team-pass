@@ -1,0 +1,96 @@
+### AI / Local Assistant ###
+GEMINI.md
+.gemini/
+.agent/
+
+### Spring Initializr ###
+HELP.md
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+### Java ###
+*.class
+*.ctxt
+*.mtj.tmp/
+*.jar
+*.war
+*.nar
+*.ear
+!/.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*
+replay_pid*
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+### VS Code ###
+.vscode/
+
+### Eclipse / STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### Frontend / Node ###
+node_modules/
+dist/
+.vite/
+
+### Logs & Temp ###
+logs/
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+### Local Databases ###
+*.db
+*.mv.db
+*.trace.db
+*.h2.db
+*.sqlite
+*.sqlite3
+
+### Environment & Local Secrets ###
+.env
+.env.*
+!.env.example
+application-local.properties
+application-local.yml
+application-local.yaml
+application-secret.properties
+application-secret.yml
+application-secret.yaml
+
+### OS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+Desktop.ini
