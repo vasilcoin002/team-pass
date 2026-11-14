@@ -98,12 +98,23 @@ Every user must authenticate and pass role-based authorization before performing
   * An employee requires at most one active license per SaaS subscription at a time.
   * Monthly department budgets follow calendar months (`YYYY-MM`) and automatically inherit the department's default monthly limit unless explicitly overridden by an Administrator.
 
-### 2.6 Implementation Scope (Checkpoint 1 vs. Checkpoint 2)
+### 2.6 Apportioning of Requirements (Implementation Scope)
 
-| Milestone | Planned Scope |
-| :--- | :--- |
-| **Checkpoint 1 (CP1)** | Complete JPA domain model (entities, inheritance / `@MappedSuperclass`, `1:N` and `M:N` associations), DAO layer, core transactional business logic via Dependency Injection (request creation with duplicate checks & manager self-acquisition, transactional approval/rejection with seat-limit check, `CZK` conversion via `ExchangeRateService` stub, and monthly budget validation/update), and non-trivial unit/integration tests verifying business rules and rollbacks. |
-| **Checkpoint 2 (CP2)** | Full CRUD & global subscription cancellation, license release/revocation, transactional employee transfer & offboarding, live ČNB/Frankfurter REST API integration and current-month cost revaluation, advanced multi-parameter filtering (`Criteria API` + at least two additional JPA techniques), Spring Security (authentication & role-based authorization), REST controllers + Postman test scenarios, and a Web GUI frontend. |
+While the system is designed to cover the complete internal SaaS governance workflow, only the core functional subset required for the semester project will be implemented. Individual requirements in Section 3 are tagged `[CP1]` or `[CP2]` to indicate when each capability is delivered:
+
+* **Checkpoint 1 — Core Domain & License Request Workflow (`[CP1]`):**
+  * Persistence of the core domain model (users and roles, departments, monthly budgets, subscriptions, license requests, and active licenses).
+  * Requesting a subscription (including duplicate-request prevention), direct license acquisition by a Department Manager, and transactional request approval/rejection within the manager's department—covering seat availability checks, `CZK` price conversion (initially with fixed/local rates), and monthly budget validation.
+  * Automated tests verifying the core business rules and failure scenarios.
+
+* **Checkpoint 2 — Complete Application (`[CP2]`):**
+  * Full management of subscriptions, departments, and monthly budget overrides, including global subscription cancellation.
+  * License release by employees, license revocation by managers, transactional employee transfers between departments, and employee offboarding.
+  * Live exchange-rate integration (ČNB / Frankfurter API) and current-month foreign-currency cost revaluation.
+  * Multi-criteria search and filtering, user authentication with role-based access control, the REST API, and the web user interface.
+
+* **Conceptual Only (Not Implemented):**
+  * E-mail/chat notifications for pending approvals or budget warnings and downloadable monthly expense reports (PDF/CSV) are considered part of a full enterprise product vision, but are excluded from implementation within this course.
 
 ## 3. Domain Model & Functional Requirements
 <!-- TODO: UML Class Diagram + Functional Requirements (REQ-1, REQ-2, ...) -->
