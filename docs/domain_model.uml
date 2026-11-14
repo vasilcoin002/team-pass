@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.example.teampass.model</OriginalElement>
+  <nodes>
+    <node x="805.1044278772988" y="-66.57653598395024">com.example.teampass.model.product.Price</node>
+    <node x="-392.25" y="2613.447250298964">com.example.teampass.model.user.DepartmentManager</node>
+    <node x="-906.4424650010801" y="311.08531410835326">com.example.teampass.model.product.Category</node>
+    <node x="-895.9424650010801" y="-104.91468589164674">com.example.teampass.model.product.Product</node>
+    <node x="-459.52067647580407" y="-206.53440920275176">com.example.teampass.model.BaseEntity</node>
+    <node x="-377.25" y="1780.9472502989638">com.example.teampass.model.user.User</node>
+    <node x="78.0" y="1534.0">com.example.teampass.model.department.Department</node>
+    <node x="882.0649415541299" y="270.39159771729067">com.example.teampass.model.license.LicenseRequestStatus</node>
+    <node x="882.06494155413" y="424.6593206278835">com.example.teampass.model.license.LicenseRequest</node>
+    <node x="742.6044278772988" y="904.8988879671681">com.example.teampass.model.license.License</node>
+    <node x="513.9751043489031" y="1522.1247617335052">com.example.teampass.model.department.DepartmentMonthlyBudget</node>
+    <node x="742.6044278772988" y="834.7791042975258">com.example.teampass.model.license.LicenseStatus</node>
+    <node x="-432.25" y="2143.947250298964">com.example.teampass.model.user.Employee</node>
+    <node x="-372.5" y="1695.2461990282184">com.example.teampass.model.user.Email</node>
+    <node x="-265.3688013793677" y="2038.4261946738352">com.example.teampass.model.user.Admin</node>
+    <node x="789.1044278772988" y="-180.53440920275176">com.example.teampass.model.product.Currency</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.example.teampass.model.license.License" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="107.0" y="15.101112032831907" />
+      <point x="1197.56494155413" y="1080.0" />
+      <point x="1197.56494155413" y="-224.03440920275176" />
+      <point x="-392.52067647580407" y="-224.03440920275176" />
+      <point x="0.0" y="-40.0" />
+    </edge>
+    <edge source="com.example.teampass.model.user.User" target="com.example.teampass.model.user.Email" relationship="TO_ONE">
+      <point x="-40.25" y="-88.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.example.teampass.model.user.Admin" target="com.example.teampass.model.user.User" relationship="GENERALIZATION">
+      <point x="0.0" y="-14.0" />
+      <point x="70.88119862063229" y="88.0" />
+    </edge>
+    <edge source="com.example.teampass.model.product.Price" target="com.example.teampass.model.product.Currency" relationship="TO_ONE">
+      <point x="0.0" y="-14.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.example.teampass.model.user.DepartmentManager" target="com.example.teampass.model.user.Employee" relationship="GENERALIZATION">
+      <point x="0.0" y="-27.5" />
+      <point x="0.0" y="196.0" />
+    </edge>
+    <edge source="com.example.teampass.model.user.Employee" target="com.example.teampass.model.department.Department" relationship="TO_ONE">
+      <point x="145.5" y="-45.00025029896369" />
+      <point x="218.0" y="2294.947" />
+      <point x="-15.0" y="136.0" />
+    </edge>
+    <edge source="com.example.teampass.model.product.Product" target="com.example.teampass.model.product.Category" relationship="TO_MANY">
+      <point x="-34.9995349989199" y="160.0" />
+      <point x="-14.999534998919898" y="-64.0" />
+    </edge>
+    <edge source="com.example.teampass.model.product.Category" target="com.example.teampass.model.product.Product" relationship="TO_MANY">
+      <point x="20.0" y="-64.0" />
+      <point x="0.0" y="160.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.License" target="com.example.teampass.model.product.Product" relationship="TO_ONE">
+      <point x="-107.0" y="0.0" />
+      <point x="145.5" y="1064.898887967168" />
+      <point x="145.5" y="55.08531410835326" />
+      <point x="107.0" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.DepartmentMonthlyBudget" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="0.0" y="-136.0" />
+      <point x="644.4751043489031" y="-166.53440920275176" />
+      <point x="67.0" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.LicenseRequest" target="com.example.teampass.model.user.Employee" relationship="TO_ONE">
+      <point x="15.0" y="184.0" />
+      <point x="1023.56494155413" y="2369.947" />
+      <point x="145.5" y="29.999749701036308" />
+    </edge>
+    <edge source="com.example.teampass.model.product.Product" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="0.0" y="-160.0" />
+      <point x="-788.9424650010801" y="-166.53440920275176" />
+      <point x="-67.0" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.Department" target="com.example.teampass.model.license.LicenseRequest" relationship="TO_MANY">
+      <point x="-15.0" y="-136.0" />
+      <point x="218.0" y="638.6593206278835" />
+      <point x="-126.5" y="30.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.LicenseRequest" target="com.example.teampass.model.user.DepartmentManager" relationship="TO_ONE">
+      <point x="30.0" y="184.0" />
+      <point x="1038.56494155413" y="2640.947250298964" />
+      <point x="105.5" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.Department" target="com.example.teampass.model.user.Employee" relationship="TO_MANY">
+      <point x="0.0" y="136.0" />
+      <point x="233.0" y="2309.947" />
+      <point x="145.5" y="-30.000250298963692" />
+    </edge>
+    <edge source="com.example.teampass.model.user.Employee" target="com.example.teampass.model.license.LicenseRequest" relationship="TO_MANY">
+      <point x="145.5" y="14.999749701036308" />
+      <point x="1008.56494155413" y="2354.947" />
+      <point x="0.0" y="184.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.License" target="com.example.teampass.model.product.Currency" relationship="TO_ONE">
+      <point x="107.0" y="0.10111203283190662" />
+      <point x="1152.56494155413" y="1065.0" />
+      <point x="1152.56494155413" y="-166.53440920275176" />
+      <point x="60.5" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.License" target="com.example.teampass.model.user.Employee" relationship="TO_ONE">
+      <point x="106.99957212270124" y="-14.898887967168093" />
+      <point x="993.0" y="1050.0" />
+      <point x="993.0" y="2339.947" />
+      <point x="145.5" y="-2.502989636923303E-4" />
+    </edge>
+    <edge source="com.example.teampass.model.user.Employee" target="com.example.teampass.model.license.License" relationship="TO_MANY">
+      <point x="145.5" y="-15.000250298963692" />
+      <point x="849.6044278772988" y="2324.947" />
+      <point x="0.0" y="160.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.LicenseRequest" target="com.example.teampass.model.department.Department" relationship="TO_ONE">
+      <point x="-126.5" y="45.0" />
+      <point x="233.0" y="653.6593206278835" />
+      <point x="0.0" y="-136.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.License" target="com.example.teampass.model.license.LicenseStatus" relationship="TO_ONE">
+      <point x="-27.5" y="-160.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.example.teampass.model.user.Employee" target="com.example.teampass.model.user.User" relationship="GENERALIZATION">
+      <point x="0.0" y="-196.0" />
+      <point x="0.0" y="88.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.LicenseRequest" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="112.99999999999977" y="-184.0" />
+      <point x="1121.5649415541297" y="-198.03440920275176" />
+      <point x="67.0" y="-31.5" />
+    </edge>
+    <edge source="com.example.teampass.model.license.LicenseRequest" target="com.example.teampass.model.product.Product" relationship="TO_ONE">
+      <point x="-126.5" y="0.0" />
+      <point x="175.5" y="608.6593206278835" />
+      <point x="175.5" y="40.08531410835326" />
+      <point x="107.0" y="-15.0" />
+    </edge>
+    <edge source="com.example.teampass.model.license.LicenseRequest" target="com.example.teampass.model.license.LicenseRequestStatus" relationship="TO_ONE">
+      <point x="-15.500000000000114" y="-184.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.DepartmentMonthlyBudget" target="com.example.teampass.model.department.Department" relationship="TO_ONE">
+      <point x="-130.5" y="11.875238266494762" />
+      <point x="155.0" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.user.User" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="-90.5" y="0.0" />
+      <point x="-409.75" y="1868.9472502989638" />
+      <point x="-17.229323524195934" y="40.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.Department" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="-155.0" y="-15.0" />
+      <point x="-394.75" y="1655.0" />
+      <point x="-2.2293235241959337" y="40.0" />
+    </edge>
+    <edge source="com.example.teampass.model.product.Category" target="com.example.teampass.model.BaseEntity" relationship="GENERALIZATION">
+      <point x="-97.5" y="0.0" />
+      <point x="-923.9424650010801" y="375.08531410835326" />
+      <point x="-923.9424650010801" y="-181.53440920275176" />
+      <point x="-67.0" y="-15.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.Department" target="com.example.teampass.model.department.DepartmentMonthlyBudget" relationship="TO_MANY">
+      <point x="155.0" y="-15.0" />
+      <point x="-130.5" y="-3.1247617335052382" />
+    </edge>
+    <edge source="com.example.teampass.model.product.Product" target="com.example.teampass.model.product.Price" relationship="TO_ONE">
+      <point x="107.0" y="-107.6618500923035" />
+      <point x="-44.5" y="0.0" />
+    </edge>
+    <edge source="com.example.teampass.model.department.DepartmentMonthlyBudget" target="com.example.teampass.model.product.Currency" relationship="TO_ONE">
+      <point x="15.0" y="-136.0" />
+      <point x="659.4751043489031" y="-166.53440920275176" />
+      <point x="-60.5" y="0.0" />
+    </edge>
+  </edges>
+  <RemovedNodes />
+  <RemovedEdges />
+  <settings layout="Hierarchic Compact" zoom="0.5369613096665885" showDependencies="true" x="-201.4153500167116" y="298.31517176624754" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
