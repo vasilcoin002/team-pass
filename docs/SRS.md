@@ -117,7 +117,60 @@ While the system is designed to cover the complete internal SaaS governance work
   * E-mail/chat notifications for pending approvals or budget warnings and downloadable monthly expense reports (PDF/CSV) are considered part of a full enterprise product vision, but are excluded from implementation within this course.
 
 ## 3. Domain Model & Functional Requirements
-<!-- TODO: UML Class Diagram + Functional Requirements (REQ-1, REQ-2, ...) -->
+
+### 3.1 Domain Model (UML Class Diagram)
+
+The domain model represents SaaS products, employees, license requests, assigned licenses, departments, and monthly budgets. Its main design decisions are:
+
+| Design decision | Rationale |
+|---|---|
+| User hierarchy | `User` stores shared authentication data (`email`, `passwordHash`, `active`). `Employee` and `Admin` extend `User`; `DepartmentManager` extends `Employee`. The intended JPA inheritance strategy for the user hierarchy is `JOINED`, while `BaseEntity` provides a shared identifier. |
+| Product categories | `Product` and `Category` have a many-to-many (M:N) relationship, allowing a product to belong to multiple categories and a category to contain multiple products. |
+| Monthly budgets | `Department` has a one-to-many (1:N) relationship with `DepartmentMonthlyBudget`. Each budget records a limit and the amount spent for a specific month and year; budget accounting is performed in CZK. |
+| Requests vs. assignments | `LicenseRequest` records an employee's request, its status, department, and reviewing manager. `License` separately records the actual assigned seat, its status, assignment/release timestamps, and `lockedPrice` in CZK. This preserves assignment history independently of the approval workflow. |
+| Value objects and statuses | `Price` and `Email` are value objects; `Currency`, `LicenseRequestStatus`, and `LicenseStatus` represent controlled sets of values. |
+
+The model also includes 1:N relationships between a department and its employees, an employee and their license requests, and an employee and their assigned licenses. A product's available seat count is derived from its seat limit and active assignments rather than stored as a separate mutable value.
+
+### 3.2 Functional Requirements
+
+The checkpoint column indicates the planned implementation stage: **[CP1]** for the first checkpoint and **[CP2]** for functionality deferred to the second checkpoint.
+
+| ID | Priority | Stage | Requirement |
+|---|---|---|---|
+| REQ-1 | High | [CP1] | An employee can submit a license request for a product, specifying an optional message. The request is initially pending and belongs to the employee's department. |
+| REQ-2 | High | [CP1] | The system prevents an employee from submitting a duplicate pending request or requesting a product for which they already hold an active license. |
+| REQ-3 | High | [CP1] | A department manager can acquire a license for themselves without a separate manager approval, subject to the same seat-capacity and department-budget checks. |
+| REQ-4 | High | [CP1] | A manager can approve a pending request from their own department. Within one transaction, the system verifies seat availability and the applicable monthly budget, determines the price in CZK, creates the assigned license, records its locked CZK price, and updates budget spending. If any check fails, no partial changes are committed. |
+| REQ-5 | High | [CP1] | A manager can reject a pending request from their own department. The request status and reviewer are recorded, without reserving a seat or increasing budget spending. |
+| REQ-6 | High | [CP2] | An admin can create, update, deactivate, and browse SaaS products, including their categories, per-seat prices, billing currencies, and maximum seat counts. |
+| REQ-7 | High | [CP2] | An admin can manage departments and their monthly spending limits; authorized users can inspect the budget limit, amount spent, and remaining budget for their department. |
+| REQ-8 | High | [CP2] | Authorized users can release or revoke assigned licenses. The system updates the license status, frees the occupied seat, and adjusts the applicable department budget while retaining license history. |
+| REQ-9 | High | [CP2] | An admin can transfer an employee to another department. Costs of the employee's active licenses are transferred between the departments' relevant monthly budgets atomically, provided the destination budget can cover them. |
+| REQ-10 | High | [CP2] | An admin can deactivate an employee during offboarding. Their active licenses are revoked or released according to the business rules, and budget allocations are updated without physically deleting historical data. |
+| REQ-11 | Medium | [CP2] | The system can retrieve EUR/CZK and USD/CZK exchange rates from an external REST provider, such as ČNB or Frankfurter. During CP1, a local exchange-rate provider is used instead. |
+| REQ-12 | Medium | [CP2] | Authorized users can trigger a recalculation of current monthly subscription costs using updated exchange rates. Previously locked assignment prices and historical records remain available for audit. |
+| REQ-13 | Medium | [CP2] | Authorized users can search and filter products, license requests, and assigned licenses by relevant attributes such as department, currency, request/license status, price range, and available seats. |
+| REQ-14 | High | [CP2] | The application exposes REST endpoints and supports email/password authentication and role-based authorization for employees, department managers, and admins. Managers may only access approval and budget-management operations for their own department. |
+
 
 ## 4. External Interfaces & Non-Functional Requirements
-<!-- TODO: External Exchange Rate API, Security, Transactions & Data Integrity -->
+### 4.1 External Interfaces
+
+- The application will use an external REST exchange-rate service (ČNB or Frankfurter) to convert EUR and USD prices into CZK.
+- The exchange-rate provider will be accessed through an application-level interface so that a deterministic local implementation can be used for CP1 and automated tests.
+- Exchange-rate failures must not cause a partially approved license request; operations that require a rate must either obtain a valid rate or fail without committing changes.
+
+### 4.2 Security & Access Control
+
+- Users will authenticate with an email address and password; passwords are stored only as secure hashes.
+- `Employee` can manage their own requests and view their assigned licenses. `DepartmentManager` can additionally review requests and monitor licenses/budgets **within their own department**. `Admin` manages the global catalog, departments, budgets, and employee transfers.
+- Authorization is enforced on the server side for every protected operation, including REST endpoints; inactive users cannot access protected functionality.
+
+### 4.3 Transactions & Data Integrity
+
+- Approval, self-acquisition, license release/revocation, department transfer, and offboarding operations must be atomic. Any failure, including insufficient seats or monthly budget, causes a rollback.
+- A license stores its `lockedPrice` in CZK when assigned. Exchange-rate changes must not silently overwrite this historical value; any revaluation must be handled explicitly.
+- Active seat allocations must never exceed a product's `maxSeatsCount`, even for concurrent requests. Each department has at most one monthly budget record for a given year and month.
+- Historical requests and licenses are retained. Deactivation uses flags such as `active = false`, while ended license allocations use statuses such as `RELEASED` or `REVOKED`, rather than physical deletion.
+
