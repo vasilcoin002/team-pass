@@ -25,9 +25,9 @@ public class DepartmentMonthlyBudget extends BaseEntity {
     private Department department;
 
     final static Currency currency = Currency.CZK;
-    @Column(name = "budget_limit", nullable = false)
+    @Column(name = "budget_limit", nullable = false, precision = 12, scale = 2)
     private BigDecimal limit;
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal spent;
 
     @Column(nullable = false)

@@ -12,6 +12,6 @@ public record Price(
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
         Currency currency,
-        @Column(nullable = false)
+        @Column(nullable = false, precision = 12, scale = 2)
         BigDecimal amount
 ) {}

@@ -22,7 +22,7 @@ public class License extends BaseEntity {
     private Employee employee;
 
     final static Currency currency = Currency.CZK;
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal lockedPrice;
 
     @Column(nullable = false, updatable = false)
