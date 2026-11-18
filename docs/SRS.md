@@ -30,7 +30,7 @@ Common abbreviations used throughout this document:
 This document is intended for the developer building and testing the system, the course instructors reviewing the architecture and scope for Checkpoint 1 and Checkpoint 2, and business stakeholders (FinOps administrators, department managers, and employees).
 
 * **Reviewers and stakeholders** evaluating the project scope and user roles can focus on **Sections 1 and 2**.
-* **Developers** implementing the persistence layer and business logic should read **Section 3** (UML domain model and functional requirements) and **Section 4** (external interfaces and non-functional requirements).
+* **Developers** implementing the persistence layer and business logic should read **Section 3** (UML domain model and functional requirements), **Section 4** (external interfaces), and **Section 5** (non-functional requirements).
 
 ### 1.4 Product Scope
 The **Team Subscription & Department Budget Tracker** provides centralized tracking and governance of paid software tools and cloud services (such as JetBrains, GitHub, Figma, and AWS). Specifically, the system:
@@ -154,23 +154,39 @@ The checkpoint column indicates the planned implementation stage: **[CP1]** for 
 | REQ-14 | High | [CP2] | The application exposes REST endpoints and supports email/password authentication and role-based authorization for employees, department managers, and admins. Managers may only access approval and budget-management operations for their own department. |
 
 
-## 4. External Interfaces & Non-Functional Requirements
-### 4.1 External Interfaces
+## 4. External Interface Requirements
 
-- The application will use an external REST exchange-rate service (ČNB or Frankfurter) to convert EUR and USD prices into CZK.
-- The exchange-rate provider will be accessed through an application-level interface so that a deterministic local implementation can be used for CP1 and automated tests.
-- Exchange-rate failures must not cause a partially approved license request; operations that require a rate must either obtain a valid rate or fail without committing changes.
+- **User Interfaces:** In Checkpoint 2, the system provides a desktop web interface tailored to the three roles (`Employee`, `DepartmentManager`, `Admin`) for managing subscription catalogs, license requests, active seats, and monthly department budgets.
+- **Software & Communications Interfaces:** The backend exposes a JSON-based REST API over HTTP/HTTPS (Checkpoint 2) and integrates with an external REST exchange-rate service (ČNB or Frankfurter / ECB API) to convert `EUR` and `USD` subscription prices into `CZK`.
+- **Service Decoupling:** The exchange-rate provider is accessed through an application-level `ExchangeRateService` interface so that a deterministic local implementation can be used in Checkpoint 1 and automated tests.
 
-### 4.2 Security & Access Control
+---
 
-- Users will authenticate with an email address and password; passwords are stored only as secure hashes.
-- `Employee` can manage their own requests and view their assigned licenses. `DepartmentManager` can additionally review requests and monitor licenses/budgets **within their own department**. `Admin` manages the global catalog, departments, budgets, and employee transfers.
-- Authorization is enforced on the server side for every protected operation, including REST endpoints; inactive users cannot access protected functionality.
+## 5. Non-Functional Requirements
 
-### 4.3 Transactions & Data Integrity
+### 5.1 Performance Requirements
 
-- Approval, self-acquisition, license release/revocation, department transfer, and offboarding operations must be atomic. Any failure, including insufficient seats or monthly budget, causes a rollback.
-- A license stores its `lockedPrice` in CZK when assigned. Exchange-rate changes must not silently overwrite this historical value; any revaluation must be handled explicitly.
-- Active seat allocations must never exceed a product's `maxSeatsCount`, even for concurrent requests. Each department has at most one monthly budget record for a given year and month.
-- Historical requests and licenses are retained. Deactivation uses flags such as `active = false`, while ended license allocations use statuses such as `RELEASED` or `REVOKED`, rather than physical deletion.
+- Catalog queries and multi-criteria filtering results (by department, currency, status, price range, and seat availability) shall return within 1 second for 95% of requests under normal load.
+- The system shall support at least 200 concurrent users without performance degradation, handling peak administrative periods such as start-of-month onboarding waves, monthly budget resets, and end-of-month FinOps cost revaluations.
+- Available seat capacity and remaining monthly budget balances shown to users shall be no more than 2 seconds out of date and must immediately reflect committed transactions during approval checks.
+
+### 5.2 Safety Requirements
+
+All state-changing financial and license operations (request approval, manager self-acquisition, license release/revocation, department transfer, and employee offboarding) execute within ACID database transactions. If any business rule check or external exchange-rate lookup fails, the transaction rolls back completely so no partial seat allocation or inconsistent department budget spending is persisted. Historical records are protected against accidental destruction: deactivated employees use soft-deletion (`active = false`) and ended licenses transition to `RELEASED` or `REVOKED` rather than being physically deleted from the database.
+
+### 5.3 Security Requirements
+
+- User authentication uses email and password credentials; passwords are never stored in plain text and are persisted only as cryptographic hashes.
+- Role-based access control (`Employee`, `DepartmentManager`, `Admin`) is enforced on the server side for every protected service method and REST endpoint; inactive users (`active = false`) cannot access protected functionality.
+- Department isolation is strictly enforced: a `DepartmentManager` can review requests, revoke active licenses, and monitor budget utilization solely within their own department.
+- Employee personal data (names, corporate emails, department assignments) is handled in accordance with GDPR principles, and all license approvals, rejections, assignments, and revocations record timestamps and the responsible actor for internal FinOps auditability.
+
+### 5.4 Software Quality Attributes
+
+- **Correctness & Data Integrity:** Active seat allocations for a product must never exceed its `maxSeatsCount`, each department has at most one monthly budget record per `(year, month)`, and a license stores its `lockedPrice` in `CZK` upon assignment so subsequent exchange-rate fluctuations do not silently overwrite historical expenditure.
+- **Reliability:** Failures or timeouts of the external exchange-rate API must never leave a license request partially approved; rate-dependent operations either obtain a valid rate or fail cleanly without committing changes.
+- **Testability:** External currency conversion is isolated behind an injectable `ExchangeRateService` interface, enabling deterministic offline testing in Checkpoint 1 and repeatable integration tests.
+- **Maintainability:** The backend follows a layered Spring Boot architecture separating JPA domain entities, DAO repositories, and transactional service logic, allowing persistence and web layers to evolve cleanly between Checkpoint 1 and Checkpoint 2.
+- **Usability:** Core workflows—submitting a request, approving department requests, and tracking monthly `CZK` budget consumption—are designed to be clear and consistent across the REST API and web interface.
+
 
