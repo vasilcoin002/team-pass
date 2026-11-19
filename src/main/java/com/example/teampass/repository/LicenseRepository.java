@@ -14,34 +14,34 @@ import java.util.Optional;
 public interface LicenseRepository extends JpaRepository<License, Long> {
 
     long countByProductIdAndStatus(Long productId, LicenseStatus status);
-    boolean existsByEmployeeIdAndProductIdAndStatus(
-            Long employeeId, Long productId, LicenseStatus status);
+    boolean existsByUserIdAndProductIdAndStatus(
+            Long userId, Long productId, LicenseStatus status);
 
     @Query("""
         SELECT l FROM License l
-        WHERE l.employee.email.value = :email
+        WHERE l.user.email.value = :email
           AND l.product.name = :productName
           AND l.status = com.example.teampass.model.license.LicenseStatus.ACTIVE
     """)
-    Optional<License> findEmployeeActiveLicense(
-            @Param("email") String email,
+    Optional<License> findUserActiveLicense(
+            @Param("email") String userEmail,
             @Param("productName") String productName
     );
 
     @Query("""
         SELECT l FROM License l
-        WHERE l.employee.email.value = :email
+        WHERE l.user.email.value = :email
           AND l.status = com.example.teampass.model.license.LicenseStatus.ACTIVE
     """)
-    List<License> findEmployeeActiveLicenses(@Param("email") String employeeEmail);
+    List<License> findAllUserActiveLicenses(@Param("email") String userEmail);
 
 
     @Query("""
         SELECT l FROM License l
-        WHERE l.employee.department.id = :departmentId
+        WHERE l.user.department.id = :departmentId
           AND l.status = com.example.teampass.model.license.LicenseStatus.ACTIVE
     """)
-    List<License> findDepartmentActiveLicenses(@Param("departmentId") Long departmentId);
+    List<License> findAllDepartmentActiveLicenses(@Param("departmentId") Long departmentId);
 
     @Query("""
         SELECT l FROM License l

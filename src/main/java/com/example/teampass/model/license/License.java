@@ -3,9 +3,11 @@ package com.example.teampass.model.license;
 import com.example.teampass.model.BaseEntity;
 import com.example.teampass.model.product.Currency;
 import com.example.teampass.model.product.Product;
-import com.example.teampass.model.user.Employee;
+import com.example.teampass.model.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,8 +20,8 @@ import java.time.LocalDateTime;
 public class License extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false, updatable = false)
-    private Employee employee;
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
 
     final static Currency currency = Currency.CZK;
     @Column(nullable = false, precision = 12, scale = 2)

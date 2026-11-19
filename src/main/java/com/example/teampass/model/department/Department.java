@@ -2,7 +2,7 @@ package com.example.teampass.model.department;
 
 import com.example.teampass.model.BaseEntity;
 import com.example.teampass.model.license.LicenseRequest;
-import com.example.teampass.model.user.Employee;
+import com.example.teampass.model.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -26,7 +26,7 @@ public class Department extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "department")
-    private Set<Employee> employees;
+    private Set<User> users;
 
     @Column(nullable = false)
     private BigDecimal defaultMonthlyLimit;

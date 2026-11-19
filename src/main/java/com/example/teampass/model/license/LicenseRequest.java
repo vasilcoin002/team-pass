@@ -3,10 +3,11 @@ package com.example.teampass.model.license;
 import com.example.teampass.model.BaseEntity;
 import com.example.teampass.model.department.Department;
 import com.example.teampass.model.product.Product;
-import com.example.teampass.model.user.DepartmentManager;
-import com.example.teampass.model.user.Employee;
+import com.example.teampass.model.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -18,8 +19,8 @@ import java.time.LocalDateTime;
 public class LicenseRequest extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false, updatable = false)
-    private Employee employee;
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false, updatable = false)
     private Department department;
@@ -37,5 +38,5 @@ public class LicenseRequest extends BaseEntity {
     private LicenseRequestStatus status;
     @ManyToOne
     @JoinColumn(name = "reviewed_by_id")
-    private DepartmentManager reviewedBy;
+    private User reviewedBy;
 }

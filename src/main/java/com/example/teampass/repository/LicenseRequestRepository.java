@@ -12,34 +12,22 @@ import java.util.List;
 @Repository
 public interface LicenseRequestRepository extends JpaRepository<LicenseRequest, Long> {
 
-    boolean existsByEmployeeIdAndProductIdAndStatus(
-            Long employeeId, Long productId, LicenseRequestStatus status);
+    boolean existsByUserIdAndProductIdAndStatus(
+            Long userId, Long productId, LicenseRequestStatus status);
 
     @Query("""
         SELECT lr FROM LicenseRequest lr
-        WHERE lr.employee.email.value = :email
+        WHERE lr.user.email.value = :email
         AND lr.status = com.example.teampass.model.license.LicenseRequestStatus.PENDING
     """)
-    List<LicenseRequest> findAllPendingRequestsByEmployee(@Param("email") String email);
+    List<LicenseRequest> findAllUserPendingRequests(@Param("email") String email);
 
      @Query("""
         SELECT lr FROM LicenseRequest lr
-        WHERE lr.employee.id = :employeeId
+        WHERE lr.user.id = :userId
         AND lr.status = com.example.teampass.model.license.LicenseRequestStatus.PENDING
     """)
-    List<LicenseRequest> findAllPendingRequestsByEmployee(@Param("employeeId") Long employeeId);
-
-
-    @Query("""
-        SELECT lr FROM LicenseRequest lr
-        WHERE lr.employee.email.value = :email
-        AND lr.status = com.example.teampass.model.license.LicenseRequestStatus.PENDING
-        AND lr.product.id = :productId
-    """)
-    List<LicenseRequest> findPendingRequestsForProductByEmployee(
-            @Param("productId") Long productId,
-            @Param("email") String employeeEmail
-    );
+    List<LicenseRequest> findAllUserPendingRequests(@Param("userId") Long userId);
 
     @Query("""
         SELECT lr FROM LicenseRequest lr
