@@ -1,12 +1,11 @@
 package com.example.teampass.service;
 
-import com.example.teampass.exception.DuplicateLicenseRequestException;
-import com.example.teampass.exception.InactiveProductException;
-import com.example.teampass.exception.InactiveUserException;
+import com.example.teampass.exception.*;
 import com.example.teampass.model.license.LicenseRequest;
 import com.example.teampass.model.license.LicenseRequestStatus;
 import com.example.teampass.model.license.LicenseStatus;
 import com.example.teampass.model.product.Product;
+import com.example.teampass.model.user.Role;
 import com.example.teampass.model.user.User;
 import com.example.teampass.repository.LicenseRepository;
 import com.example.teampass.repository.LicenseRequestRepository;
@@ -29,19 +28,8 @@ public class LicenseRequestService {
 
     @Transactional
     public LicenseRequest requestLicense(Long userId, Long productId, String message) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        User user = optionalUser.orElseThrow(
-                () -> new IllegalArgumentException("User with id: " + userId + " not found")
-        );
-
-        if (!user.isActive()) {
-            throw new InactiveUserException("User with id: "+ userId + " is not active");
-        }
-
-        Optional<Product> optionalProduct = productRepository.findById(productId);
-        Product product = optionalProduct.orElseThrow(
-                () -> new IllegalArgumentException("Product with id: " + productId + " not found")
-        );
+        User user = getActiveUserOrElseThrow(userId);
+        Product product = getProductOrElseThrow(productId);
 
         if (!product.isActive()) {
             throw new InactiveProductException("Product with id: "+ productId + " is not active");
@@ -72,6 +60,58 @@ public class LicenseRequestService {
         return licenseRequestRepository.save(licenseRequest);
     }
 
+    @Transactional
+    public LicenseRequest rejectRequest(Long requestId, Long managerId) {
+        User manager = getActiveUserOrElseThrow(managerId);
+
+        if (manager.getRole() != Role.DEPARTMENT_MANAGER) {
+            throw new AccessDeniedException("DEPARTMENT_MANAGER role required to reject license request");
+        }
+
+        LicenseRequest licenseRequest = getLicenseRequestOrElseThrow(requestId);
+
+        if (!manager.getDepartment().equals(licenseRequest.getDepartment())) {
+            throw new AccessDeniedException(
+                    "Manager has to be from the department " + licenseRequest.getDepartment().getName()
+            );
+        }
+
+        if (licenseRequest.getStatus() != LicenseRequestStatus.PENDING) {
+            throw new InvalidLicenseRequestStateException("License request has to be pending to reject it");
+        }
+
+        licenseRequest.setStatus(LicenseRequestStatus.DENIED);
+        licenseRequest.setReviewedBy(manager);
+
+        return licenseRequestRepository.save(licenseRequest);
+    }
+
+    private User getActiveUserOrElseThrow(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser.orElseThrow(
+                () -> new IllegalArgumentException("User with id: " + userId + " not found")
+        );
+
+        if (!user.isActive()) {
+            throw new InactiveUserException("User with id: "+ userId + " is not active");
+        }
+
+        return user;
+    }
+
+    private LicenseRequest getLicenseRequestOrElseThrow(Long requestId) {
+        Optional<LicenseRequest> optionalLicenseRequest = licenseRequestRepository.findById(requestId);
+        return optionalLicenseRequest.orElseThrow(
+                () -> new IllegalArgumentException("License request with id " + requestId + " not found")
+        );
+    }
+
+    private Product getProductOrElseThrow(Long productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        return optionalProduct.orElseThrow(
+                () -> new IllegalArgumentException("Product with id: " + productId + " not found")
+        );
+    }
 
 //    public LicenseRequest approveRequest() {
 
