@@ -48,5 +48,12 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
         WHERE l.product.name = :productName
           AND l.status = com.example.teampass.model.license.LicenseStatus.ACTIVE
     """)
-    List<License> findAllActiveLicensesByProductName(@Param("productName") String productName);
+    List<License> findAllProductActiveLicenses(@Param("productName") String productName);
+
+    @Query("""
+        SELECT l FROM License l
+        WHERE l.product.id = :productId
+          AND l.status = com.example.teampass.model.license.LicenseStatus.ACTIVE
+    """)
+    List<License> findAllProductActiveLicenses(@Param("productId") Long productId);
 }

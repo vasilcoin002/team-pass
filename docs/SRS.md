@@ -94,7 +94,7 @@ Every user must authenticate and pass role-based authorization before performing
 ### 2.5 Assumptions and Dependencies
 * **External API Dependency:** Live exchange-rate conversion and cost revaluation depend on network availability and the uptime of the ČNB or Frankfurter REST API (in CP1, an injected `ExchangeRateService` stub/interface is used so the core logic remains decoupled and testable offline).
 * **Organizational Assumptions:**
-  * Each active `Employee` and `DepartmentManager` belongs to at most one department at any given time.
+  * Each user (regardless of role) belongs to exactly one department at any given time (administrators are assigned to a dedicated department, e.g., FinOps).
   * An employee requires at most one active license per SaaS subscription at a time.
   * Monthly department budgets follow calendar months (`YYYY-MM`) and automatically inherit the department's default monthly limit unless explicitly overridden by an Administrator.
 
@@ -120,17 +120,17 @@ While the system is designed to cover the complete internal SaaS governance work
 
 ### 3.1 Domain Model (UML Class Diagram)
 
-The domain model represents SaaS products, employees, license requests, assigned licenses, departments, and monthly budgets. Its main design decisions are:
+The domain model represents SaaS products, users and their roles, license requests, assigned licenses, departments, and monthly budgets. Its main design decisions are:
 
 | Design decision | Rationale |
 |---|---|
-| User hierarchy | `User` stores shared authentication data (`email`, `passwordHash`, `active`). `Employee` and `Admin` extend `User`; `DepartmentManager` extends `Employee`. The intended JPA inheritance strategy for the user hierarchy is `JOINED`, while `BaseEntity` provides a shared identifier. |
+| Users & roles | `User` is a single entity storing authentication data (`email`, `passwordHash`, `active`), personal details, department membership, and a `Role` enum (`EMPLOYEE`, `DEPARTMENT_MANAGER`, `ADMIN`) instead of an entity inheritance hierarchy. This simplifies role changes, avoids multi-table `JOIN` overhead, and integrates cleanly with Spring Security. `BaseEntity` (`@MappedSuperclass`) provides the shared identifier across domain entities. |
 | Product categories | `Product` and `Category` have a many-to-many (M:N) relationship, allowing a product to belong to multiple categories and a category to contain multiple products. |
 | Monthly budgets | `Department` has a one-to-many (1:N) relationship with `DepartmentMonthlyBudget`. Each budget records a limit and the amount spent for a specific month and year; budget accounting is performed in CZK. |
 | Requests vs. assignments | `LicenseRequest` records an employee's request, its status, department, and reviewing manager. `License` separately records the actual assigned seat, its status, assignment/release timestamps, and `lockedPrice` in CZK. This preserves assignment history independently of the approval workflow. |
 | Value objects and statuses | `Price` and `Email` are value objects; `Currency`, `LicenseRequestStatus`, and `LicenseStatus` represent controlled sets of values. |
 
-The model also includes 1:N relationships between a department and its employees, an employee and their license requests, and an employee and their assigned licenses. A product's available seat count is derived from its seat limit and active assignments rather than stored as a separate mutable value.
+The model also includes 1:N relationships between a department and its users, a user and their license requests, and a user and their assigned licenses. A product's available seat count is derived from its seat limit and active assignments rather than stored as a separate mutable value.
 
 ### 3.2 Functional Requirements
 
