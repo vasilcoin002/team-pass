@@ -21,10 +21,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LicenseRequestService {
 
+    private final LicenseService licenseService;
+
     private final UserRepository userRepository;
     private final LicenseRequestRepository licenseRequestRepository;
     private final ProductRepository productRepository;
     private final LicenseRepository licenseRepository;
+
 
     @Transactional
     public LicenseRequest requestLicense(Long userId, Long productId, String message) {
@@ -62,28 +65,41 @@ public class LicenseRequestService {
 
     @Transactional
     public LicenseRequest rejectRequest(Long requestId, Long managerId) {
-        User manager = getActiveUserOrElseThrow(managerId);
-
-        if (manager.getRole() != Role.DEPARTMENT_MANAGER) {
-            throw new AccessDeniedException("DEPARTMENT_MANAGER role required to reject license request");
-        }
-
-        LicenseRequest licenseRequest = getLicenseRequestOrElseThrow(requestId);
-
-        if (!manager.getDepartment().equals(licenseRequest.getDepartment())) {
-            throw new AccessDeniedException(
-                    "Manager has to be from the department " + licenseRequest.getDepartment().getName()
-            );
-        }
-
-        if (licenseRequest.getStatus() != LicenseRequestStatus.PENDING) {
-            throw new InvalidLicenseRequestStateException("License request has to be pending to reject it");
-        }
+        User manager = getActiveManagerOrThrow(managerId);
+        LicenseRequest licenseRequest = getPendingRequestForManagerOrThrow(requestId, manager);
 
         licenseRequest.setStatus(LicenseRequestStatus.DENIED);
         licenseRequest.setReviewedBy(manager);
 
         return licenseRequestRepository.save(licenseRequest);
+    }
+
+    @Transactional
+    public LicenseRequest approveRequest(Long requestId, Long managerId) {
+        User manager = getActiveManagerOrThrow(managerId);
+        LicenseRequest licenseRequest = getPendingRequestForManagerOrThrow(requestId, manager);
+
+        User user = licenseRequest.getUser();
+        if (!user.isActive()) {
+            throw new InactiveUserException(
+                    "User " + user.getEmail().value() + " is not active anymore"
+            );
+        }
+
+        Product product = licenseRequest.getProduct();
+        if (!product.isActive()) {
+            throw new InactiveProductException(
+                    "Product " + product.getName() + " is not active anymore"
+            );
+        }
+
+        licenseRequest.setStatus(LicenseRequestStatus.ACCEPTED);
+        licenseRequest.setReviewedBy(manager);
+        licenseRequest = licenseRequestRepository.save(licenseRequest);
+
+        licenseService.issueLicense(licenseRequest);
+
+        return licenseRequest;
     }
 
     private User getActiveUserOrElseThrow(Long userId) {
@@ -99,11 +115,37 @@ public class LicenseRequestService {
         return user;
     }
 
+    private User getActiveManagerOrThrow(Long managerId) {
+        User manager = getActiveUserOrElseThrow(managerId);
+
+        if (manager.getRole() != Role.DEPARTMENT_MANAGER) {
+            throw new AccessDeniedException("DEPARTMENT_MANAGER role required to review license request");
+        }
+
+        return manager;
+    }
+
     private LicenseRequest getLicenseRequestOrElseThrow(Long requestId) {
         Optional<LicenseRequest> optionalLicenseRequest = licenseRequestRepository.findById(requestId);
         return optionalLicenseRequest.orElseThrow(
                 () -> new IllegalArgumentException("License request with id " + requestId + " not found")
         );
+    }
+
+    private LicenseRequest getPendingRequestForManagerOrThrow(Long requestId, User manager) {
+        LicenseRequest licenseRequest = getLicenseRequestOrElseThrow(requestId);
+
+        if (!manager.getDepartment().equals(licenseRequest.getDepartment())) {
+            throw new AccessDeniedException(
+                    "Manager has to be from the department " + licenseRequest.getDepartment().getName()
+            );
+        }
+
+        if (licenseRequest.getStatus() != LicenseRequestStatus.PENDING) {
+            throw new InvalidLicenseRequestStateException("License request has to be pending to review it");
+        }
+
+        return licenseRequest;
     }
 
     private Product getProductOrElseThrow(Long productId) {
@@ -112,18 +154,4 @@ public class LicenseRequestService {
                 () -> new IllegalArgumentException("Product with id: " + productId + " not found")
         );
     }
-
-//    public LicenseRequest approveRequest() {
-
-//        long currentProductUsersCount = licenseRepository.countByProductIdAndStatus(productId, LicenseStatus.ACTIVE);
-//
-//        if (product.getMaxSeatsCount() != null && currentProductUsersCount >= product.getMaxSeatsCount()) {
-//            throw new NoAvailableSeatsException(
-//                    "There are no available seats for the product " +
-//                            product.getName() + " for now. " +
-//                            "Max seats count : " + product.getMaxSeatsCount() +
-//                            ", current product users count: " + currentProductUsersCount
-//            );
-//        }
-//    }
 }
