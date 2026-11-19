@@ -5,6 +5,6 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public record Email(
-        @Column(unique = true, nullable = false, updatable = false)
+        @Column(name = "email", unique = true, nullable = false, updatable = false)
         String value
 ) {}
