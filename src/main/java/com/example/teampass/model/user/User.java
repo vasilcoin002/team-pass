@@ -13,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "app_users")
-@Inheritance(strategy = InheritanceType.JOINED) // to ensure department_id column is NOT NULL
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,6 +32,10 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true, updatable = false)
     private String personId;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
