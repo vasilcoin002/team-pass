@@ -5,10 +5,12 @@ import com.example.teampass.model.department.Department;
 import com.example.teampass.model.license.License;
 import com.example.teampass.model.license.LicenseRequest;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,4 +47,25 @@ public class User extends BaseEntity {
     private List<License> licenses;
     @OneToMany(mappedBy = "user")
     private List<LicenseRequest> licenseRequests;
+
+
+    @Builder
+    public User(Email email, String passwordHash,
+                String name, String surname,
+                String personId, String description,
+                Role role, Department department
+    ) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.name = name;
+        this.surname = surname;
+        this.personId = personId;
+        this.description = description;
+        this.department = department;
+
+        this.role = role != null ? role : Role.EMPLOYEE;
+        this.active = true;
+        this.licenses = new ArrayList<>();
+        this.licenseRequests = new ArrayList<>();
+    }
 }

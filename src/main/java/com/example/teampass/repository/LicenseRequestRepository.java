@@ -8,12 +8,24 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LicenseRequestRepository extends JpaRepository<LicenseRequest, Long> {
 
     boolean existsByUserIdAndProductIdAndStatus(
             Long userId, Long productId, LicenseRequestStatus status);
+
+    @Query("""
+        SELECT lr FROM LicenseRequest lr
+        WHERE lr.user.email.value = :email
+          AND lr.product.name = :productName
+          AND lr.status = com.example.teampass.model.license.LicenseRequestStatus.PENDING
+    """)
+    Optional<LicenseRequest> findUserPendingRequest(
+            @Param("email") String userEmail,
+            @Param("productName") String productName
+    );
 
     @Query("""
         SELECT lr FROM LicenseRequest lr

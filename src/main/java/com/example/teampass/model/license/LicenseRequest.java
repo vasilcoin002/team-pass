@@ -5,11 +5,13 @@ import com.example.teampass.model.department.Department;
 import com.example.teampass.model.product.Product;
 import com.example.teampass.model.user.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "license_requests")
@@ -39,4 +41,20 @@ public class LicenseRequest extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "reviewed_by_id")
     private User reviewedBy;
+
+
+    @Builder
+    public LicenseRequest(User user, Product product, String message) {
+        Objects.requireNonNull(user, "user must not be null");
+        Objects.requireNonNull(product, "product must not be null");
+
+        this.user = user;
+        this.product = product;
+        this.message = message;
+
+        this.department = user.getDepartment();
+        this.at = LocalDateTime.now();
+        this.status = LicenseRequestStatus.PENDING;
+        this.reviewedBy = null;
+    }
 }
