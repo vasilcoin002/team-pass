@@ -81,6 +81,12 @@ public class LicenseService {
         return issueLicense(licenseRequest.getUser(), licenseRequest.getProduct());
     }
 
+    @Transactional
+    public License acquireLicenseForSelf(User user) {
+        // todo implement properly
+        return new License();
+    }
+
     private DepartmentMonthlyBudget getCurrentDepartmentMonthlyBudgetOrElseGet(Department department) {
         LocalDateTime now = LocalDateTime.now();
         Optional<DepartmentMonthlyBudget> optionalBudget

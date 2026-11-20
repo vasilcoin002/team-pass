@@ -54,6 +54,8 @@ public class LicenseRequestService {
             );
         }
 
+        // todo implement acquiring license for managers by themselves
+
         LicenseRequest licenseRequest = LicenseRequest.builder()
                 .user(user)
                 .product(product)
