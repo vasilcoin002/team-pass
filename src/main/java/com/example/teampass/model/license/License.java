@@ -5,6 +5,7 @@ import com.example.teampass.model.product.Currency;
 import com.example.teampass.model.product.Product;
 import com.example.teampass.model.user.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,4 +40,16 @@ public class License extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LicenseStatus status;
+
+
+    @Builder
+    public License(User user, BigDecimal lockedPrice, Product product, LicenseStatus status) {
+        this.user = user;
+        this.lockedPrice = lockedPrice;
+        this.product = product;
+        this.status = status;
+
+        this.assignedAt = LocalDateTime.now();
+        this.releasedAt = null;
+    }
 }

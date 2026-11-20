@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -35,4 +36,15 @@ public class DepartmentMonthlyBudget extends BaseEntity {
     @Column(nullable = false)
     private int budgetMonth;
 
+
+    @Builder
+    public DepartmentMonthlyBudget(Department department, BigDecimal limit, BigDecimal spent) {
+        this.department = department;
+        this.limit = limit;
+        this.spent = spent;
+
+        LocalDateTime now = LocalDateTime.now();
+        this.budgetYear = now.getYear();
+        this.budgetMonth = now.getMonthValue();
+    }
 }
