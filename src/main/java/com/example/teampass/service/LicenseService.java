@@ -5,11 +5,13 @@ import com.example.teampass.model.department.Department;
 import com.example.teampass.model.department.DepartmentMonthlyBudget;
 import com.example.teampass.model.license.License;
 import com.example.teampass.model.license.LicenseRequest;
+import com.example.teampass.model.license.LicenseRequestStatus;
 import com.example.teampass.model.license.LicenseStatus;
 import com.example.teampass.model.product.Product;
 import com.example.teampass.model.user.User;
 import com.example.teampass.repository.DepartmentMonthlyBudgetRepository;
 import com.example.teampass.repository.LicenseRepository;
+import com.example.teampass.repository.LicenseRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +25,11 @@ import java.util.Optional;
 public class LicenseService {
 
     private final ExchangeRateService exchangeRateService;
+    private final UserService userService;
+    private final ProductService productService;
 
     private final LicenseRepository licenseRepository;
+    private final LicenseRequestRepository licenseRequestRepository;
     private final DepartmentMonthlyBudgetRepository budgetRepository;
 
 
@@ -82,9 +87,20 @@ public class LicenseService {
     }
 
     @Transactional
-    public License acquireLicenseForSelf(User user) {
-        // todo implement properly
-        return new License();
+    public License acquireLicenseForSelf(Long managerId, Long productId) {
+        User manager = userService.getActiveManagerOrThrow(managerId);
+        Product product = productService.getActiveProductOrThrow(productId);
+
+        Optional<LicenseRequest> optionalLicenseRequest = licenseRequestRepository.findUserPendingRequest(
+                manager.getEmail().value(), product.getName()
+        );
+        if (optionalLicenseRequest.isPresent()) {
+            LicenseRequest licenseRequest = optionalLicenseRequest.get();
+            licenseRequest.setStatus(LicenseRequestStatus.CANCELLED);
+            licenseRequestRepository.save(licenseRequest);
+        }
+
+        return issueLicense(manager, product);
     }
 
     private DepartmentMonthlyBudget getCurrentDepartmentMonthlyBudgetOrElseGet(Department department) {
