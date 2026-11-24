@@ -140,7 +140,7 @@ The checkpoint column indicates the planned implementation stage: **[CP1]** for 
 |---|---|---|---|
 | REQ-1 | High | [CP1] | An employee can submit a license request for a product, specifying an optional message. The request is initially pending and belongs to the employee's department. |
 | REQ-2 | High | [CP1] | The system prevents an employee from submitting a duplicate pending request or requesting a product for which they already hold an active license. |
-| REQ-3 | High | [CP1] | A department manager can acquire a license for themselves without a separate manager approval, subject to the same seat-capacity and department-budget checks. |
+| REQ-3 | High | [CP1] | A department manager can acquire a license for themselves without a separate manager approval, subject to the same seat-capacity and department-budget checks; any pre-existing pending request by the manager for that product is automatically cancelled. |
 | REQ-4 | High | [CP1] | A manager can approve a pending request from their own department. Within one transaction, the system verifies seat availability and the applicable monthly budget, determines the price in CZK, creates the assigned license, records its locked CZK price, and updates budget spending. If any check fails, no partial changes are committed. |
 | REQ-5 | High | [CP1] | A manager can reject a pending request from their own department. The request status and reviewer are recorded, without reserving a seat or increasing budget spending. |
 | REQ-6 | High | [CP2] | An admin can create, update, deactivate, and browse SaaS products, including their categories, per-seat prices, billing currencies, and maximum seat counts. |
