@@ -1,7 +1,9 @@
 package com.example.teampass.model.product;
 
+import com.example.teampass.exception.ProductWithoutCategoryException;
 import com.example.teampass.model.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,4 +36,24 @@ public class Product extends BaseEntity {
 
     @Column(nullable = false)
     private boolean active;
+
+    @Builder
+    public Product(
+            String name, String description,
+            Integer maxSeatsCount, Price price,
+            Set<Category> categories
+    ) {
+        this.name = name;
+        this.description = description;
+        this.maxSeatsCount = maxSeatsCount;
+        this.price = price;
+        if (categories == null || categories.isEmpty()) {
+            throw new ProductWithoutCategoryException(
+                    "Product must have any category, please provide it while creation"
+            );
+        }
+        this.categories = categories;
+
+        this.active = true;
+    }
 }

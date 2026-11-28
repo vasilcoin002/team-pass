@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -54,17 +55,27 @@ public class DepartmentService {
     public Department updateDepartment(@NonNull Long departmentId, @NonNull UpdateDepartmentRequest request) {
         Department department = getDepartmentOrThrow(departmentId);
 
-        if (request.name() == null && request.defaultMonthlyLimit() == null) {
+        if (request.isEmpty()) {
             return department;
         }
 
-        if (request.name() != null) department.setName(request.name());
-        if (request.defaultMonthlyLimit() != null) department.setDefaultMonthlyLimit(request.defaultMonthlyLimit());
+        assignCorrectArgumentsIntoDepartment(department, request);
 
         department = departmentRepository.save(department);
         return department;
     }
 
+    private void assignCorrectArgumentsIntoDepartment(Department department, UpdateDepartmentRequest request) {
+        if (request.name() != null && !Objects.equals(department.getName(), request.name())) {
+            if (departmentRepository.existsByName(request.name())) {
+                throw new AlreadyExistsException("Department with name " + request.name() + " already exists");
+            }
+            department.setName(request.name());
+        }
+        if (request.defaultMonthlyLimit() != null) department.setDefaultMonthlyLimit(request.defaultMonthlyLimit());
+    }
+
+    // todo move to orchestra class
     @Transactional
     public boolean deleteDepartment(@NonNull Long departmentId) {
         boolean departmentExists = departmentRepository.existsById(departmentId);

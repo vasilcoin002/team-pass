@@ -32,4 +32,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("categoryIds") Collection<Long> categoryIds,
             @Param("categoryCount") long categoryCount
     );
+
+    boolean existsByName(String name);
 }

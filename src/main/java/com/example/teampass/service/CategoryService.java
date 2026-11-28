@@ -53,12 +53,16 @@ public class CategoryService {
             return category;
         }
 
+        if (categoryRepository.existsByName(newName)) {
+            throw new AlreadyExistsException("Category with name " + newName + " already exists");
+        }
         category.setName(newName);
 
         category = categoryRepository.save(category);
         return category;
     }
 
+    // todo move to orchestra class (decide whether to do it or not)
     @Transactional
     public boolean deleteCategory(@NonNull Long categoryId) {
         boolean categoryExists = categoryRepository.existsById(categoryId);
