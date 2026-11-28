@@ -7,11 +7,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +25,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Department extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "department")
@@ -35,4 +38,15 @@ public class Department extends BaseEntity {
 
     @OneToMany(mappedBy = "department")
     private List<LicenseRequest> licenseRequests;
+
+
+    @Builder
+    public Department(String name, BigDecimal defaultMonthlyLimit) {
+        this.name = name;
+        this.defaultMonthlyLimit = defaultMonthlyLimit;
+
+        this.users = new HashSet<>();
+        this.budgets = new ArrayList<>();
+        this.licenseRequests = new ArrayList<>();
+    }
 }
