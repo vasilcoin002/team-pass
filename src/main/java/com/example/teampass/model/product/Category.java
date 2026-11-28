@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,4 +25,8 @@ public class Category extends BaseEntity {
     @ManyToMany(mappedBy = "categories")
     private Set<Product> products;
 
+    public Category(String name) {
+        this.name = name;
+        this.products = new HashSet<>();
+    }
 }

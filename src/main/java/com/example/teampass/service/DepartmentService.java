@@ -5,11 +5,11 @@ import com.example.teampass.dto.UpdateDepartmentRequest;
 import com.example.teampass.exception.AlreadyExistsException;
 import com.example.teampass.model.department.Department;
 import com.example.teampass.repository.DepartmentRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -19,7 +19,7 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepository;
 
     @Transactional(readOnly = true)
-    public Department getDepartmentOrThrow(Long departmentId) {
+    public Department getDepartmentOrThrow(@NonNull Long departmentId) {
         Optional<Department> optionalDepartment = departmentRepository.findById(departmentId);
         return optionalDepartment.orElseThrow(
                 () -> new IllegalArgumentException("Department with id: " + departmentId + " not found")
@@ -27,7 +27,7 @@ public class DepartmentService {
     }
 
     @Transactional(readOnly = true)
-    public Department getDepartmentOrThrow(String name) {
+    public Department getDepartmentOrThrow(@NonNull String name) {
         Optional<Department> optionalDepartment = departmentRepository.findByName(name);
         return optionalDepartment.orElseThrow(
                 () -> new IllegalArgumentException("Department with name: " + name + " not found")
@@ -35,7 +35,7 @@ public class DepartmentService {
     }
 
     @Transactional
-    public Department createDepartment(CreateDepartmentRequest request) {
+    public Department createDepartment(@NonNull CreateDepartmentRequest request) {
         if (departmentRepository.existsByName(request.name())) {
             throw new AlreadyExistsException("Department with name " + request.name() + " already exists");
         }
@@ -51,22 +51,22 @@ public class DepartmentService {
     }
 
     @Transactional
-    public Department updateDepartment(Long departmentId, UpdateDepartmentRequest request) {
+    public Department updateDepartment(@NonNull Long departmentId, @NonNull UpdateDepartmentRequest request) {
         Department department = getDepartmentOrThrow(departmentId);
-
-        if (request.name() != null) department.setName(request.name());
-        if (request.defaultMonthlyLimit() != null) department.setDefaultMonthlyLimit(request.defaultMonthlyLimit());
 
         if (request.name() == null && request.defaultMonthlyLimit() == null) {
             return department;
         }
+
+        if (request.name() != null) department.setName(request.name());
+        if (request.defaultMonthlyLimit() != null) department.setDefaultMonthlyLimit(request.defaultMonthlyLimit());
 
         department = departmentRepository.save(department);
         return department;
     }
 
     @Transactional
-    public boolean deleteDepartment(Long departmentId) {
+    public boolean deleteDepartment(@NonNull Long departmentId) {
         boolean departmentExists = departmentRepository.existsById(departmentId);
 
         if (!departmentExists) {
