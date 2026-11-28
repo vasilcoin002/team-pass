@@ -1,15 +1,17 @@
 package com.example.teampass.dto;
 
-public class CreateUserRequest {
+import lombok.NonNull;
 
-    private String email;
-    private String password;
+public record CreateUserRequest (
 
-    private String name;
-    private String surname;
-    private String personId;
-    private String description;
+    @NonNull String email,
+    @NonNull String password,
 
-    private Long departmentId;
+    @NonNull String name,
+    @NonNull String surname,
+    @NonNull String personId,
+    String description,
 
-}
+    @NonNull Long departmentId
+
+) {}
